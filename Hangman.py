@@ -15,7 +15,7 @@ HANGMAN = [
 
 with open("words.txt", "r") as f:
     random_num = random.randint(0, 852)
-    WORD = linecache.getline('words.txt', random_num)
+    WORD = linecache.getline('words.txt', random_num).strip('\n')
 
 """
 Player 1
@@ -28,11 +28,10 @@ check the word
 
 class Hangman:
     def __init__(self, word_to_guess):
-        self.attempts = 9
-        self.word_to_guess = word_to_guess
-        self.game_progress = list('_' * len(self.word_to_guess))
-        self.player1 = None
-        self.player2 = None
+        self.attempts = len(HANGMAN)
+        self._word_to_guess = word_to_guess
+        self.game_progress = list('_' * len(self._word_to_guess))
+        self._player1, self._player2 = None, None
         self.current_player = None
 
     def __str__(self):
@@ -55,9 +54,29 @@ class Hangman:
     def player2(self, value):
         self._player2 = value
 
+    def display(self):
+        print(f"It is {self.current_player}'s turn! Attempts: {self.attempts} left!")
+        print(f"Guess the word {self.game_progress}")
 
-x = Hangman(word_to_guess="WORD")
-print(x)
-print(x.player1)
-x.player1 = "Ahmd"
-print(x.player1)
+    def validate_character(self, guess):
+        if guess not in self._word_to_guess:
+            return False
+        self.game_progress[self._word_to_guess.index(guess)] = guess
+        return True
+
+    def play(self):
+        self._player1 = input("Enter Player 1 Name: ")
+        self._player2 = input("Enter Player 2 Name: ")
+        print(self.attempts, len(HANGMAN), self.game_progress)
+        while self.attempts and ("_" in self.game_progress):
+            self.display()
+            guess = input("Enter the character: ")
+            if self.validate_character(guess):
+                print("Guess correct, GOOD JOB!")
+            else:
+                self.attempts -= 1
+                print("Opps! WRONG Guess, Try Again!")
+
+
+x = Hangman(word_to_guess=WORD)
+x.play()
