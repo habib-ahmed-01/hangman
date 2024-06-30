@@ -31,7 +31,7 @@ class Hangman:
         self.attempts: int = len(HANGMAN)
         self._word_to_guess: str = word_to_guess
         self.game_progress: list = list('_' * len(self._word_to_guess))
-        self._player1, self._player2 = None, None
+        self._player1 = None
 
     @property
     def player1(self) -> str:
@@ -41,42 +41,33 @@ class Hangman:
     def player1(self, value) -> None:
         self._player1 = value
 
-    @property
-    def player2(self) -> str:
-        return self._player2
-
-    @player2.setter
-    def player2(self, value) -> None:
-        self._player2 = value
-
     def __str__(self):
-        return f"""This is a Hangman Game. The players {self.player1} and {self.player2}. 
-        The person to guess is {self.current_player}. He has {self.attempts} attempts left! {self.game_progress}"""
+        return f"""This is a Hangman Game. The players are {self.player1} and {self.player2}.
+                Attempts left: {self.attempts}.
+                Progress: {''.join(self.game_progress)}"""
 
     def display(self) -> None:
-        print(f"Number of Attempts: {self.attempts}\nGame Progress: {self.game_progress}")
+        print(f"Number of Attempts: {self.attempts}\nGame Progress: {''.join(self.game_progress)}")
 
     def validate_character(self, guess: str) -> bool:
-        if guess not in self._word_to_guess and len(guess) > 0:
-            return False
-        elif guess in self._word_to_guess and len(guess) > 0:
+        if guess in self._word_to_guess and len(guess) == 1:
             self.game_progress[self._word_to_guess.index(guess)] = guess
             return True
+        return False
 
     def play(self) -> None:
-        self._player1: str = input("Enter Player 1 Name: ")
-        self._player2: str = input("Enter Player 2 Name: ")
+        self._player1: str = input("Enter Player Name: ")
 
-        while self.attempts and ("_" in self.game_progress):
+        while self.attempts > 0 and ("_" in self.game_progress):
             self.display()
             guess: str = str(input("Enter the character: ").strip().lower())
 
             if self.validate_character(guess):
-                print("Guess correct, GOOD JOB!")
+                print(f"Correct guess, GOOD JOB {self._player1}!")
             elif self.attempts >= 1:
                 if self.attempts == 1:
                     self.attempts -= 1
-                    print("Opps, Wrong guess... YOU LOST!")
+                    print(f"Opps, Wrong guess... YOU LOST {self._player1}!!")
                     print(f"The word was: {self._word_to_guess}")
                 else:
                     self.attempts -= 1
@@ -84,6 +75,9 @@ class Hangman:
                     print("Opps! WRONG Guess... Try Again!")
                     print(*hangman_progress, sep="\n")
                     print("___________________________________")
+
+        if '_' not in self.game_progress:
+            print(f"Congratulations! You've guessed the word: {self._word_to_guess}")
 
 
 x = Hangman(word_to_guess=WORD)
